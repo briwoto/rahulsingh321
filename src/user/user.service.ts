@@ -1,8 +1,11 @@
 import { Injectable } from '@nestjs/common';
+import { PrismaService } from 'src/prisma/prisma.service';
 
-@Injectable({})
+@Injectable()
 export class AboutService {
+  constructor(private prismaService: PrismaService) {}
   getUserInfo() {
-    return 'user info from About Service';
+    const data = this.prismaService.cv_user.findFirst();
+    return data;
   }
 }
