@@ -1,0 +1,56 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model cv_education {
+  id          String @id(map: "education_pk") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  school_name String @db.VarChar(64)
+  country     String @db.VarChar(32)
+  degree      String @db.VarChar(64)
+  start_year  Int    @db.SmallInt
+  end_year    Int?   @db.SmallInt
+}
+
+model cv_experience {
+  company_name     String    @db.VarChar(64)
+  designation      String    @db.VarChar(64)
+  start_date       DateTime  @db.Date
+  end_date         DateTime? @db.Date
+  achievements     String?
+  id               String    @id(map: "experience_pk") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  responsibilities String?
+  cv_user          cv_user[]
+}
+
+model cv_projects {
+  id            String  @id(map: "projects_pk") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title         String  @db.VarChar(64)
+  experience_id String? @db.Uuid
+  description   String?
+}
+
+model cv_skills {
+  id            String  @id(map: "skills_pk") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  skill_type    String  @db.VarChar(16)
+  skill_name    String  @db.VarChar(32)
+  level         String? @db.VarChar(16)
+  experience_id String?
+}
+
+model cv_user {
+  id                    String        @id(map: "user_pk") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  current_experience_id String        @db.Uuid
+  city                  String        @db.VarChar(16)
+  country               String        @db.VarChar(16)
+  linkedin_url          String?       @db.VarChar(128)
+  links                 Json?
+  email                 String        @db.VarChar(32)
+  summary               String?
+  full_name             String        @db.VarChar(32)
+  cv_experience         cv_experience @relation(fields: [current_experience_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "cv_user_cv_experience_id_fk")
+}
